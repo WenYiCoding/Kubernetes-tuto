@@ -1,0 +1,35 @@
+# Comment
+# This file is created to serve as k8s config
+# Every k8s component config file can be stored as JSON or YAML
+
+apiVersion: apps/v1   ## which apiserver version can use this, format is group(apps,batch,autoscaling,...)/version
+kind: Deployment      ## type of resource this config apply to
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 3     ## focus on this, this will make sure 3 pods are always created
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+
+# This file can run using
+# > kubectl create -f fileName.yaml
+# Try get all after run the previous command, you will notice there are 3 pods as config stated in "spec:replica"
+
+# The create command always create new resources, what if we dont want to create new resources
+# > kubectl apply -f fileName.yaml
+# this will only update the existing resources according to the config file
+# if not exist, this command also creates new resources
+
+# To delete resources created with this file
+# > kubectl delete -f fileName.yaml

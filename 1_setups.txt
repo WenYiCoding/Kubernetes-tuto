@@ -1,0 +1,44 @@
+1. Run local node with minikube
+
+minikube verison
+ - to check if it is installed + version
+
+minikube start --driver=docker
+ - start a cluster
+ - needs container runtime (e.g. Docker-Engine)
+ - also needs driver (https://minikube.sigs.k8s.io/docs/drivers/), this project use docker
+ - Docker Desktop can auto start cluster, check its settings
+
+kubectl get nodes
+ - list all nodes
+ - only after cluster is started
+
+minikube status
+ - check node status
+
+2. Run multiple nodes using multipass and k3s
+
+multipass version
+ - to check if it is installed + version
+
+multipass launch --name k3s --cpus 2 --memory 4G --disk 10G
+ - uses Ubuntu as image
+ - creates virtual machine
+
+multipass list
+multipass ls
+ - list all virtual machines
+
+common commands
+1. multipass launch --name k3s
+2. multipass start k3s
+3. multipass stop k3s
+4. multipass shell k3s
+ - log into the machine
+5. multipass exec k3s --ls -l
+ - directly execute command
+6. multipass list
+7. multipass help
+
+as machine is linux-based, we can remote it using SSH
+ - for security, always set password for each linux environment

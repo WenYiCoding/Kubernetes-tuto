@@ -1,0 +1,40 @@
+list all pods with details like IP
+> kubectl get pod -o wide
+
+now get the data from the pod using cURL
+> curl ipAddress
+if the pod is running without issue, we will get a HTML
+
+however, if pod IP can be changed as the pod is closed and replaced by new
+
+because of this, we need a svc as an entry point to access pods
+
+we can create service using command or load a config file
+
+if using command, we can either
+> kubectl create service serviceName
+> kubectl expose deployment deploymentName
+the second command is useful if deployment is created
+
+now we have created a service
+
+we can try curl its IP
+we will get the same result as accessing pod
+
+to check its details
+> kubectl describe resourceType resourceName
+
+now we delete the created service and do it again using config yaml
+refer serviceConfig.yaml
+
+after created a service, the IP is still internal
+means other devices cannot access these services
+we need to add node:port to set external IP
+
+change the "spec:type" to NodePort
+ - services are defaulted to ClusterIP type for internal use
+then add "spec:ports:nodePort"
+ - the port only can be ranged between 30000 to 32767
+
+now we get node IP and access it using browser or cmd
+ - it should return a webpage

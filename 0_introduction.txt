@@ -1,0 +1,112 @@
+Kubernetes sometimes abbreviated as K8S
+ - this type abbreviation called numeronym
+ - numbers are used to shorten words by couting omitted letters
+ - other example: i18n → internationalization (18 letters between "i" and "n")
+
+Prerequisite
+ - Containerization = a method of packaging and running applications
+ - Docker = set of platform as a service (PaaS) products that use OS-level virtualization to deliver software
+
+Container can control hardware to run applications
+ - but what control the containers if business want to scale up
+ - can self create shell scripts but not effecient if used in large operation
+
+Kubernetes can control the containers
+ - created by Google
+ - an open-source container orchestration system
+ - for automating software deployment, scaling, and management
+
+How k8s can control containers
+ - using yaml (YAML Ain't Markup Language) file as configuration
+
+Core k8s concepts/component/api objects
+0. Cluster
+ - a set of nodes
+1. Node [https://kubernetes.io/docs/concepts/architecture/nodes/]
+ - can be physical or virtual server
+ - contains pods
+2. Pod [https://kubernetes.io/docs/concepts/workloads/pods/]
+ - control group for 1 or many containers
+ - share same resources and server configs (network, database)
+ - ideally 1 pod 1 container 
+ -- 1 pod can have many containers if they provide diff func under same resources
+ -- example: sidecar software, small auxiliary program that runs alongside a more extensive program to provide additional functionality
+ --- like data logger, security tools
+ - pods are communicated using IP address
+ -- these are auto assigned
+ -- these are internal, outside devices unable to access
+ - will be destroyed if pod is corrupted
+ -- will create new pod with new IP to replace it
+ -- other pods will not be able to access this new pod as it have the new IP instead of old one
+ --- service can solve this issue
+3. Service (SVC) [https://kubernetes.io/docs/concepts/services-networking/service/]
+ - act as an entry point to access multiple pods
+ - control request traffic to its linked pods
+ - if one linked pod is destroyed, svc will redirect request to other pods
+ - normally use two SVC
+ -- 1 SVC as internal services, accessing sensitive pods like databases
+ -- 1 SVC as external services, controlling client requests to frontend
+ --- example, node:port can give node an entry point and direct the request to external service
+ ---- this node:port is accessed using IP, Ingress can use URL to replace it
+4. Ingress
+ - exposes HTTP and HTTPS routes from outside the cluster to services within the cluster
+ - as an entry point for users to access program hosted on cluster
+ - have dns functionality
+5. ConfigMap
+ - if we have app pod and database pod, the app always need to reconfigure to connect the database
+ - configmap dynamically manages the needed config
+ - if database pod have diff config, just reconfig the ConfigMap and restart affected pods
+ - the file is public, do not place any sensitive info into it
+6. Secret
+ - similar to ConfigMap but with security to hold sensitive info
+ - but in security perspective, its easy to crack as it uses Base64 encryption
+ - may need other security module to protect (Admission Control, RBAC Authorization, Node Authorization)
+7. Volumes
+ - if a pod is destroyed, all datas will be erased
+ - volumes stores a long term data
+ - or redirect data to be stored at device outside cluster
+8. Deploy
+ - a cluster unable to mitigate error in only 1 pod 1 node
+ - multiple nodes often used to prevent halting operation because node error
+ - deploy does do this step, set configs/rules to create multiple pods for nodes
+9. StatefulSet
+ - backend/database pods needs to be synced between nodes
+ - Deploy undable to achieve this
+ - StatefulSet can sync these datas
+ - not suitable to use on all stateful pods
+
+The architecture of k8s is Master-Worker architecture
+ - Master controls multiple workers
+ - in k8s, nodes can assign these roles
+ -- master nodes control/maintain worker nodes
+ -- worker nodes operate the program
+ --- worker nodes contain 3 main components: Kubelet, Kube-proxy, container runtime
+ ---- container runtime used for operating container
+ ----- example: docker-engine, containerd, cri-o, mirantis container runtime
+ ---- Kubelet controls/maintains pods operation, api-server components, check pods status
+ ---- Kube-proxy maintains network rules on nodes for Pod-to-Pod and external traffic routing
+ --- master node contains 4 main components
+ ---- Kube-apiserver
+ ----- communicate the nodes using api
+ ----- main component to operate nodes
+ ----- to use this api, we can use Kubectl (CLI app), dashboard app, GUI app
+ ----- also authorize all requests in api objects
+ ---- etcd
+ ----- similar to redis, a key-value pair data storage
+ ----- backing store for all cluster data, mostly status
+ ---- ControllerManager
+ ----- an error mitigation component
+ ----- regulates the state of the system
+ ----- watches the shared state of the cluster through the apiserver
+ ---- Scheduler
+ ----- monitor and schedule the pods
+ ----- move new pod to node with less usage to optimize
+ --- master node can have cloud control manager if developer integrate cloud services like AWS, Azure
+
+This project will use
+ - minikube, a lightweight version of k8s environment
+ -- competitors are k3s, k3d, kind
+ -- mostly used for create local cluster as testing env
+ - kubectl, cli application to control k8s
+ - multipass, a virtual machine management tool
+ - k3s

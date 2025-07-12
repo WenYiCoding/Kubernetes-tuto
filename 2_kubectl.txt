@@ -1,0 +1,64 @@
+log in the master node to proceed
+
+> kubectl get nodes
+ - list all nodes in current cluster
+
+> kubectl get svc
+ - list all running svc (services)
+
+> kubectl get pod
+ - list all pods
+
+if pod is not created, create a pod
+
+> kubectl run podName --image=containerImage
+ - run a pod with podName, installing containerImage
+
+> kubectl create -h
+ - check all available api objects/components to be created
+ - pod is not listed because other components will create pod eventually
+
+> kubectl get deployment
+ - check all deployment
+ - look for READY column, it indicate how many pod is running under deployment
+
+now, if we enter 
+> kubectl get replicaset
+ - you will see one object which have infix "deployment"
+ - replicaset is a object to manage pod
+ - will be created and managed by deployment agent
+
+we can edit/config the deployment
+> kubectl edit deployment deploymentName
+
+if we open an yaml file in default editor
+
+change this
+ | spec:
+ |  replicas: 1
+to this
+ | spec:
+ |  replicas: 3
+then save and quit
+
+now if we list the pods again
+> kubectl get pod
+ - we will notice there are 3 pods with infix "deployment"
+
+again, if we enter
+> kubectl get replicaset
+ - it will show updated replicaset
+
+to check log
+> kubectl logs podName
+ - it will print out recent logs
+
+to login bash of the pod
+> kubectl exec -it podName -- /bin/bash
+
+we can show all resources under current cluster
+> kubectl get all
+you can add "-o wide" to show more info like IP
+
+to delete a resources
+> kubectl delete resourceType resourceName
